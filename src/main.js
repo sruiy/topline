@@ -5,6 +5,7 @@ import store from './store'
 import { ValidationProvider, ValidationObserver, extend } from 'vee-validate'
 import zh from 'vee-validate/dist/locale/zh_CN'
 import * as rules from 'vee-validate/dist/rules'
+import '@/styles/index.less'
 
 import {
   Cell,
@@ -12,7 +13,12 @@ import {
   NavBar,
   Field,
   Button,
-  Toast
+  Toast,
+  Tabbar,
+  TabbarItem,
+  Tab,
+  Tabs,
+  List
 } from 'vant'
 
 Vue
@@ -22,6 +28,11 @@ Vue
   .use(Field)
   .use(Button)
   .use(Toast)
+  .use(Tabbar)
+  .use(TabbarItem)
+  .use(Tab)
+  .use(Tabs)
+  .use(List)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)
