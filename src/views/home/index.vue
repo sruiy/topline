@@ -21,7 +21,7 @@
               <div slot="label">
                 <van-grid :border="false" :column-num="3">
                   <van-grid-item v-for="(img, index) in item.cover.images" :key="index">
-                    <van-image :src="img" height="80" />
+                    <van-image :src="img" lazy-load height="80" />
                   </van-grid-item>
                 </van-grid>
                 <div class="article-info">

@@ -23,7 +23,8 @@ import {
   PullRefresh,
   Grid,
   GridItem,
-  Image
+  Image,
+  Lazyload
 } from 'vant'
 
 Vue
@@ -42,6 +43,7 @@ Vue
   .use(Grid)
   .use(GridItem)
   .use(Image)
+  .use(Lazyload)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)
