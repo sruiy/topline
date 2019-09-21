@@ -6,6 +6,7 @@ import { ValidationProvider, ValidationObserver, extend } from 'vee-validate'
 import zh from 'vee-validate/dist/locale/zh_CN'
 import * as rules from 'vee-validate/dist/rules'
 import '@/styles/index.less'
+import { relativeDate } from '@/utils/date'
 
 import {
   Cell,
@@ -18,7 +19,11 @@ import {
   TabbarItem,
   Tab,
   Tabs,
-  List
+  List,
+  PullRefresh,
+  Grid,
+  GridItem,
+  Image
 } from 'vant'
 
 Vue
@@ -33,9 +38,15 @@ Vue
   .use(Tab)
   .use(Tabs)
   .use(List)
+  .use(PullRefresh)
+  .use(Grid)
+  .use(GridItem)
+  .use(Image)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)
+
+Vue.filter('relativeDate', relativeDate)
 
 // 配置使用中文语言
 for (let rule in rules) {
