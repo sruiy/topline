@@ -11,7 +11,7 @@ export default new Vuex.Store({
   mutations: {
     setToken (state, user) {
       state.userInfo = user
-      setItem('user', JSON.stringify(state.userInfo))
+      setItem('user', state.userInfo)
     }
   },
   actions: {

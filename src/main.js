@@ -24,7 +24,10 @@ import {
   Grid,
   GridItem,
   Image,
-  Lazyload
+  Lazyload,
+  Popup,
+  Icon,
+  Tag
 } from 'vant'
 
 Vue
@@ -44,6 +47,9 @@ Vue
   .use(GridItem)
   .use(Image)
   .use(Lazyload)
+  .use(Popup)
+  .use(Icon)
+  .use(Tag)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)

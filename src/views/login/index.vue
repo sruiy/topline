@@ -47,7 +47,7 @@ export default {
         // debugger
         this.loading = true
         const res = await login(this.user)
-        console.log(res)
+        // console.log(res)
         this.$store.commit('setToken', res.data.data)
         this.loading = false
         this.$toast.success('登陆成功')

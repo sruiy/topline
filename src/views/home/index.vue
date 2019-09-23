@@ -2,8 +2,11 @@
   <div class="home">
     <van-nav-bar title="首页" :fixed="true" />
 
-    <!--标签栏-->
+    <!--频道标签栏-->
     <van-tabs v-model="active" color="#3296fa">
+      <div slot="nav-right" class="wap-nav" @click="isChannelsShow=true">
+        <van-icon name="wap-nav" size="24" />
+      </div>
       <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
         <!--文章列表-->
         <van-pull-refresh v-model="channel.pullLoading" @refresh="onRefresh">
@@ -37,42 +40,145 @@
         </van-pull-refresh>
       </van-tab>
     </van-tabs>
+
+    <!--编辑频道-->
+    <van-popup
+      v-model="isChannelsShow"
+      round
+      closeable
+      position="bottom"
+      :style="{ height: '95%' }"
+    >
+
+      <van-cell-group>
+        <van-cell :border="false" title="我的频道" size="large">
+          <van-button @click="isEdit = !isEdit" color="rgb(178, 60, 30)" plain size="mini" round>{{isEdit? '完成': '编辑'}}</van-button>
+        </van-cell>
+      <van-grid :gutter="10">
+        <van-grid-item :class="{focusColor:channel.toggleClass}" @click="onUserChannelsClick(channel,index)" v-for="(channel,index) in channels" :key="channel.id" :text="channel.name">
+          <van-icon v-show="isEdit" class="close" slot="icon" name="close" />
+        </van-grid-item>
+      </van-grid>
+      </van-cell-group>
+    <van-cell-group>
+        <van-cell :border="false" title="推荐频道" size="large">
+        </van-cell>
+      <van-grid :gutter="10">
+        <van-grid-item @click="addChannels(channel)" v-for="channel in remainingChannels" :key="channel.id" :text="channel.name" />
+      </van-grid>
+      </van-cell-group>
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { getChannels } from '@/api/channels'
+import { getUserOrDefaultChannel, getChannels, setUserChannels, delUserChannels } from '@/api/channels'
 import { getArticle } from '@/api/article'
+import { mapState } from 'vuex'
+import { getItem, setItem } from '@/utils/storage'
 export default {
   name: 'home',
   data () {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isChannelsShow: false,
+      allChannels: [],
+      isEdit: false
     }
   },
   computed: {
     currentChannel () {
       return this.channels[this.active]
+    },
+    ...mapState(['userInfo']),
+
+    // 获取剩余频道
+    remainingChannels () {
+      return this.allChannels.filter(channel => {
+        // return this.channels.findIdex(item => channel.id === item.id) === -1
+        return this.channels.find(item => channel.id === item.id) === undefined
+      }
+      )
     }
   },
   methods: {
-    async getAllChannels () {
-      const { data } = await getChannels()
-      /***
-       * 将频道数组添加以下几项
-       */
-      data.data.channels.forEach(channel => {
-        channel.list = []
-        channel.loading = false
-        channel.finished = false
-        channel.timestamp = null
-        channel.pullLoading = false
+    // 删除或切换频道
+    async onUserChannelsClick (channel, index) {
+      this.channels.forEach(item => { item.toggleClass = false })
+      if (this.isEdit) {
+        this.channels.splice(index, 1)
+        if (this.userInfo) {
+          await delUserChannels(channel.id)
+        } else {
+          setItem('channels', this.channels)
+        }
+      } else {
+        this.active = index
+        channel.toggleClass = true
+        this.isChannelsShow = false
+      }
+    },
+    // 添加频道
+    async addChannels (channel) {
+      if (this.userInfo) {
+        this.channels.push(channel)
+        const channles = []
+        this.channels.slice(1).forEach((item, index) => {
+          channles.push({
+            id: item.id,
+            seq: index + 2
+          })
+        })
+        await setUserChannels(channles)
+      } else {
+        this.channels.push(channel)
+        setItem('channels', this.channels)
+      }
+    },
+    // 获取我的频道
+    async getloadChannels () {
+      // const { data } = await getChannels()
+      let channels = []
+      if (this.userInfo) {
+        const { data } = await getUserOrDefaultChannel()
+        channels = data.data.channels
+      } else {
+        if (getItem('channels')) {
+          channels = getItem('channels')
+        } else {
+          const { data } = await getUserOrDefaultChannel()
+          channels = data.data.channels
+        }
+      }
+      // channels.forEach(channel => {
+      //   channel.list = [] //
+      //   channel.loading = false //
+      //   channel.finished = false //
+      //   channel.timestamp = null //
+      //   channel.pullLoading = false
+      //   channel.toggleClass = false //
+      // })
+      channels.forEach(channel => {
+        const extendData = this.addChannelData()
+        Object.assign(channel, extendData)
       })
       // console.log(data)
-      this.channels = data.data.channels
+      this.channels = channels
     },
 
+    // 获取所有频道
+    async getChannels () {
+      const { data } = await getChannels()
+      const channels = data.data.channels
+      channels.forEach(channel => {
+        const extendData = this.addChannelData()
+        Object.assign(channel, extendData)
+      })
+      this.allChannels = channels
+    },
+
+    // 上划加载
     async onLoad () {
       // 异步更新数据
       const CerrentChannel = this.currentChannel
@@ -94,6 +200,7 @@ export default {
       }
     },
 
+    // 下拉刷新
     async onRefresh () {
       const CerrentChannel = this.currentChannel
       const { data } = await getArticle({
@@ -103,17 +210,34 @@ export default {
       })
       CerrentChannel.list.unshift(...data.data.results)
       CerrentChannel.pullLoading = false
+      this.$toast('刷新完成')
+    },
+
+    /**
+     * 将增加的频道属性数据封装成函数
+     */
+    addChannelData () {
+      return {
+        list: [],
+        loading: false,
+        finished: false,
+        timestamp: null,
+        pullLoading: false,
+        toggleClass: false
+      }
     }
   },
   created () {
-    this.getAllChannels()
+    this.getChannels()
+    this.getloadChannels()
   }
 }
 </script>
 
-<style lang="less" scoped>  //推荐使用局部样式加/deep/
+<style lang="less" scoped>
+//推荐使用局部样式加/deep/
 .van-tabs {
-  /deep/ .van-tabs__content{
+  /deep/ .van-tabs__content {
     margin-bottom: 50px;
     margin-top: 90px;
   }
@@ -122,8 +246,7 @@ export default {
     top: 46px;
     left: 0;
     right: 0;
-    z-index: 2;  //首页有一个z-index,要设置高一个层级
-
+    z-index: 2; //首页有一个z-index,要设置高一个层级
   }
 }
 .article-info {
@@ -133,5 +256,36 @@ export default {
   .meta span {
     margin-right: 10px;
   }
+}
+.wap-nav {
+  position: sticky;
+  right: 0;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  // opacity: 0.8;
+  color: #666;
+}
+.van-cell-group {
+  margin-top: 50px;
+
+}
+.close {
+position: absolute;
+top: -5px;
+right: -5px
+}
+.van-popup{
+  /deep/ .van-popup__close-icon {
+    left: 10px
+  }
+}
+// .van-grid-item{
+//   box-sizing: border-box;
+//   margin: 10px 10px 0;
+// }
+.focusColor {
+  box-sizing: border-box;
+  border: 1px solid red;
 }
 </style>
