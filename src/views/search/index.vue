@@ -90,7 +90,30 @@ export default {
         return
       }
 
-      // 记录历史记录
+      //   // 记录历史记录
+      this.setHistory(q)
+      //   if (!this.historyList.includes(q)) {
+      //     this.historyList.unshift(q)
+      //   } else {
+      //     const index = this.historyList.findIndex(item => {
+      //       return item.trim().toLowerCase() === q.trim().toLowerCase()
+      //     })
+      //     if (index !== -1) {
+      //       this.historyList.splice(index, 1)
+      //       this.historyList.unshift(q)
+      //     }
+      //   }
+      //   setItem('history', this.historyList)
+
+      this.$router.push({
+        name: 'search-result',
+        params: {
+          q
+        }
+      })
+    },
+
+    setHistory (q) {
       if (!this.historyList.includes(q)) {
         this.historyList.unshift(q)
       } else {
@@ -103,13 +126,6 @@ export default {
         }
       }
       setItem('history', this.historyList)
-
-      this.$router.push({
-        name: 'search-result',
-        params: {
-          q
-        }
-      })
     },
     onCancel () {},
     highLight (str) {
