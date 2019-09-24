@@ -3,6 +3,7 @@
     <van-nav-bar title="首页" :fixed="true">
       <!-- 自定义标题内容 -->
       <van-button
+      class="search-btn"
       icon="search"
       size="small"
       round type="info"
@@ -14,9 +15,9 @@
     </van-nav-bar>
 
     <!--频道标签栏-->
-    <van-tabs v-model="active" color="#3296fa">
+    <van-tabs v-model="active" color="#3296fa" @change="lightHigh(active)">
       <div slot="nav-right" class="wap-nav" @click="isChannelsShow=true">
-        <van-icon name="wap-nav" size="24" />
+        <van-icon class="channelsEdit" name="wap-nav" size="24" />
       </div>
       <van-tab :title="channel.name" v-for="channel in channels" :key="channel.id">
         <!--文章列表-->
@@ -66,8 +67,8 @@
           <van-button @click="isEdit = !isEdit" color="rgb(178, 60, 30)" plain size="mini" round>{{isEdit? '完成': '编辑'}}</van-button>
         </van-cell>
       <van-grid :gutter="10">
-        <van-grid-item :class="{focusColor:channel.toggleClass}" @click="onUserChannelsClick(channel,index)" v-for="(channel,index) in channels" :key="channel.id" :text="channel.name">
-
+        <van-grid-item @click="onUserChannelsClick(channel,index)" v-for="(channel,index) in channels" :key="channel.id">
+          <div slot="text" class="my-channels" :class="{focusColor:channel.toggleClass}">{{channel.name}}</div>
           <van-icon v-show="isEdit" class="close" slot="icon" name="close" />
         </van-grid-item>
       </van-grid>
@@ -115,6 +116,10 @@ export default {
     }
   },
   methods: {
+    lightHigh (active) {
+      this.channels.forEach(item => { item.toggleClass = false })
+      this.channels[active].toggleClass = true
+    },
     // 删除或切换频道
     async onUserChannelsClick (channel, index) {
       this.channels.forEach(item => { item.toggleClass = false })
@@ -192,6 +197,7 @@ export default {
 
     // 上划加载
     async onLoad () {
+      this.channels.forEach(item => { item.toggleClass = false })
       // 异步更新数据
       const CerrentChannel = this.currentChannel
       const { data } = await getArticle({
@@ -210,6 +216,7 @@ export default {
       } else {
         CerrentChannel.timestamp = preTimestamp
       }
+      CerrentChannel.toggleClass = true
     },
 
     // 下拉刷新
@@ -277,6 +284,7 @@ export default {
   background-color: #fff;
   // opacity: 0.8;
   color: #666;
+
 }
 .van-cell-group {
   margin-top: 50px;
@@ -293,7 +301,7 @@ right: -5px
   }
 }
 //搜索按钮
-.van-button {
+.search-btn {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.5);
   color: #fff
@@ -302,13 +310,17 @@ right: -5px
 //   box-sizing: border-box;
 //   margin: 10px 10px 0;
 // }
-.focusColor {
-  box-sizing: border-box;
-  border: 1px solid red;
-}
+
 .home {
-  .van-icon {
-    color:#fff
+  .van-icon-search.van-button__icon {
+    color: #fff
   }
+  .my-channels{
+    font-size: 12px;
+    color: #7d7e80
+  }
+  .focusColor {
+  color: rgb(178, 60, 30)
+}
 }
 </style>
