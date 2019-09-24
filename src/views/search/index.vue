@@ -47,7 +47,7 @@
           name="close"
           style="line-height: inherit;"
           v-show="isDelShow"
-          @click="historyList.splice(index,1)"
+          @click.stop="historyList.splice(index,1)"
         />
       </van-cell>
     </van-cell-group>
