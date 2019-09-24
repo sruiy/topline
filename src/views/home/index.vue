@@ -197,7 +197,6 @@ export default {
 
     // 上划加载
     async onLoad () {
-      this.channels.forEach(item => { item.toggleClass = false })
       // 异步更新数据
       const CerrentChannel = this.currentChannel
       const { data } = await getArticle({
@@ -216,7 +215,6 @@ export default {
       } else {
         CerrentChannel.timestamp = preTimestamp
       }
-      CerrentChannel.toggleClass = true
     },
 
     // 下拉刷新
