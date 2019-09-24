@@ -27,7 +27,8 @@ import {
   Lazyload,
   Popup,
   Icon,
-  Tag
+  Tag,
+  Search
 } from 'vant'
 
 Vue
@@ -50,6 +51,7 @@ Vue
   .use(Popup)
   .use(Icon)
   .use(Tag)
+  .use(Search)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)

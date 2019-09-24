@@ -1,28 +1,39 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import login from '../views/login'
-import home from '@/views/home'
-import tabber from '@/views/tabber'
-
+import Login from '../views/login'
+import Home from '@/views/home'
+import Tabber from '@/views/tabber'
+import Search from '@/views/search'
+import SearchResult from '@/views/search-result'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
   routes: [
     { name: 'login',
       path: '/login',
-      component: login
+      component: Login
     },
     {
       path: '/',
-      component: tabber,
+      component: Tabber,
       children: [
         {
           name: 'home',
           path: '',
-          component: home
+          component: Home
 
         }
       ]
+    },
+    {
+      name: 'search',
+      path: '/search',
+      component: Search
+    },
+    {
+      name: 'search-result',
+      path: '/search/:q',
+      component: SearchResult
     }
   ]
 })

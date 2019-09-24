@@ -1,6 +1,17 @@
 <template>
   <div class="home">
-    <van-nav-bar title="首页" :fixed="true" />
+    <van-nav-bar title="首页" :fixed="true">
+      <!-- 自定义标题内容 -->
+      <van-button
+      icon="search"
+      size="small"
+      round type="info"
+      slot="title"
+      @click="$router.push('/search')"
+      >
+      搜索
+      </van-button>
+    </van-nav-bar>
 
     <!--频道标签栏-->
     <van-tabs v-model="active" color="#3296fa">
@@ -56,6 +67,7 @@
         </van-cell>
       <van-grid :gutter="10">
         <van-grid-item :class="{focusColor:channel.toggleClass}" @click="onUserChannelsClick(channel,index)" v-for="(channel,index) in channels" :key="channel.id" :text="channel.name">
+
           <van-icon v-show="isEdit" class="close" slot="icon" name="close" />
         </van-grid-item>
       </van-grid>
@@ -159,7 +171,7 @@ export default {
       //   channel.pullLoading = false
       //   channel.toggleClass = false //
       // })
-      channels.forEach(channel => {
+      channels.forEach(channel => { // 遍历每项值不一样,所以调用封装函数不能在外面定义
         const extendData = this.addChannelData()
         Object.assign(channel, extendData)
       })
@@ -187,7 +199,7 @@ export default {
         timestamp: CerrentChannel.timestamp || Date.now(),
         withTop: 1
       })
-      console.log(data)
+      // console.log(data)
       const { pre_timestamp: preTimestamp, results } = data.data
       // console.log(CerrentChannel.list)
       CerrentChannel.list.push(...results)
@@ -280,6 +292,12 @@ right: -5px
     left: 10px
   }
 }
+//搜索按钮
+.van-button {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #fff
+}
 // .van-grid-item{
 //   box-sizing: border-box;
 //   margin: 10px 10px 0;
@@ -287,5 +305,10 @@ right: -5px
 .focusColor {
   box-sizing: border-box;
   border: 1px solid red;
+}
+.home {
+  .van-icon {
+    color:#fff
+  }
 }
 </style>
