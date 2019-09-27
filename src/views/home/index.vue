@@ -32,6 +32,12 @@
               v-for="item in channel.list"
               :key="item.art_id.toString()"
               :title="item.title"
+              @click="$router.push({
+                name:'article',
+                params: {
+                  articleId:item.art_id.toString()
+                }
+              })"
             >
               <div slot="label">
                 <van-grid :border="false" :column-num="3">

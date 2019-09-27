@@ -28,7 +28,11 @@ import {
   Popup,
   Icon,
   Tag,
-  Search
+  Search,
+  Loading,
+  Dialog,
+  ActionSheet,
+  DatetimePicker
 } from 'vant'
 
 Vue
@@ -52,6 +56,10 @@ Vue
   .use(Icon)
   .use(Tag)
   .use(Search)
+  .use(Loading)
+  .use(Dialog)
+  .use(ActionSheet)
+  .use(DatetimePicker)
 
 Vue.component('ValidationProvider', ValidationProvider)
 Vue.component('ValidationObserver', ValidationObserver)

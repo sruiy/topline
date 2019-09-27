@@ -9,7 +9,7 @@
         @cancel="onCancel"
         @search="onSearch(searchText)"
         >
-            <div slot="action">取消</div>
+            <div slot="action" @click="$router.back()">取消</div>
         </van-search>
     </form>
     <van-cell-group v-if="searchText">
@@ -70,9 +70,9 @@ export default {
     }
   },
   watch: {
+    // 联想关键词
     searchText: debounce(async function (newVal) {
       if (!newVal.length) {
-        // this.suggestion = []
         return
       }
       const { data } = await getSearchSuggestion(newVal)
@@ -80,6 +80,7 @@ export default {
 
       this.suggestion = options
     }, 1000),
+
     historyList (newVal) {
       setItem('history', newVal)
     }

@@ -9,7 +9,7 @@ request.defaults.transformResponse = [function (data) {
   try {
     return JSONbig.parse(data)
   } catch (err) {
-    console.log(err)
+    // console.log(err)
     return data
   }
 }]

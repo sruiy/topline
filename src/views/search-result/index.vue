@@ -41,7 +41,7 @@ export default {
         perPage: 20,
         q: this.$route.params.q
       })
-      console.log(data)
+      // console.log(data)
       const { results } = data.data
       this.list.push(...results)
       this.loading = false
